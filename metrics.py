@@ -13,26 +13,6 @@ def similarity(X):
     return manhattan_matrix
 
 
-# 局部一致性（越高越好）
-def local_consistency_score(dataset, cluster_labels, k):
-    neighbors = NearestNeighbors(n_neighbors=k).fit(dataset)
-    _, indices = neighbors.kneighbors(dataset)
-
-    total_consistency = 0
-    N = dataset.shape[0]
-
-    for i in range(N):
-        target_label = cluster_labels[i]
-        neighbor_labels = cluster_labels[indices[i]]
-        # 计算邻居中与目标样本属于同一簇的样本比例
-        same_cluster_count = np.sum(neighbor_labels == target_label)
-        consistency_score = same_cluster_count / k
-        total_consistency += consistency_score
-
-    # 平均局部一致性得分
-    return total_consistency / N
-
-
 #####################
 # NDP
 #####################
