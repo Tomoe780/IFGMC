@@ -18,7 +18,7 @@ def compute_similarity_matrix(X):
 
 class IFGMC:
     def __init__(self, n_components, tol=1e-6, max_iter=100, n_init=2, reg_covar=1e-6,
-                 init_params='kmeans', lambda_penalty=0.5):
+                 init_params='kmeans', lambda_penalty=0.3):
         self.n_components = n_components
         self.tol = tol
         self.max_iter = max_iter
@@ -57,9 +57,9 @@ class IFGMC:
         for i in range(N):
             for k in range(self.n_components):
                 fairness_term = self.lambda_penalty * np.sum(
-                    self.neighbor_graph_[i, :] * abs(self.resp_[:, k] - self.resp_[i, k])
+                    self.neighbor_graph_[i, :] * (self.resp_[:, k] - self.resp_[i, k])
                 )
-                self.resp_[i, k] *= (1 - np.exp(fairness_term))
+                self.resp_[i, k] += fairness_term
 
         # 归一化责任度
         self.resp_ /= self.resp_.sum(axis=1, keepdims=True)
@@ -111,6 +111,7 @@ class IFGMC:
             resp[:, k] = self.weights_[k] * norm.pdf(X)
 
         resp /= resp.sum(axis=1, keepdims=True)
+        print(resp)
         return resp
 
     def predict(self, X):

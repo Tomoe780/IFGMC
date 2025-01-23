@@ -1,5 +1,4 @@
 import numpy as np
-from sklearn.neighbors import NearestNeighbors
 
 
 # 相似度矩阵
