@@ -44,10 +44,8 @@ class GMM:
         N, D = X.shape
         Nk = self.resp_.sum(axis=0)
 
-        self.weights_ = Nk / N
-        self.weights_ = np.maximum(self.weights_, 1e-6)
+        self.weights_ = np.maximum(Nk / N, 1e-6)
         self.weights_ /= self.weights_.sum()
-
         self.means_ = np.dot(self.resp_.T, X) / Nk[:, np.newaxis]
 
         for k in range(self.n_components):
@@ -55,8 +53,6 @@ class GMM:
             self.covariances_[k] = np.dot(self.resp_[:, k] * diff.T, diff) / Nk[k] + self.reg_covar * np.eye(D)
 
     def fit(self, X):
-        best_log_likelihood = -np.inf
-        best_params = None
 
         for _ in range(self.n_init):
             self._initialize_parameters(X)
@@ -65,16 +61,11 @@ class GMM:
             for i in range(self.max_iter):
                 prev_log_likelihood = log_likelihood
                 log_likelihood = self._e_step(X)
+                print(log_likelihood)
                 self._m_step(X)
 
                 if prev_log_likelihood is not None and abs(log_likelihood - prev_log_likelihood) < self.tol:
                     break
-
-            if log_likelihood > best_log_likelihood:
-                best_log_likelihood = log_likelihood
-                best_params = (self.weights_, self.means_, self.covariances_)
-
-        self.weights_, self.means_, self.covariances_ = best_params
 
     def predict_proba(self, X):
         N, D = X.shape

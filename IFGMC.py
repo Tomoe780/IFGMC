@@ -111,7 +111,6 @@ class IFGMC:
             resp[:, k] = self.weights_[k] * norm.pdf(X)
 
         resp /= resp.sum(axis=1, keepdims=True)
-        print(resp)
         return resp
 
     def predict(self, X):
