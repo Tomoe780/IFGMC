@@ -3,23 +3,22 @@ os.environ["OMP_NUM_THREADS"] = '1'
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import silhouette_score
 from IFGMC import IFGMC
-from GMM import GMM
+from sklearn.mixture import GaussianMixture
 import pandas as pd
 from metrics import neighbor_discrepancy_penalty
 
 
-X = pd.read_csv(r"dataset/iris.csv", sep="\t")
+X = pd.read_csv(r"dataset/abalone.csv", sep="\t")
 normalizer = MinMaxScaler()
 X = normalizer.fit_transform(X)
-
 # 设置聚类数量
-K = 3
+K = 6
+# 传统EM聚类
+EM = GaussianMixture(K)
+EM.fit(X)
+labels1 = EM.predict(X)
 
-# 传统GMC
-gmm = GMM(K)
-gmm.fit(X)
-labels1 = gmm.predict(X)
-print(labels1)
+
 # 计算轮廓系数
 silhouette_score_GMC = silhouette_score(X, labels1)
 print(f"silhouette_score_GMC: {silhouette_score_GMC}")
